@@ -1,7 +1,11 @@
 package com.reto4.controllers;
 
+import com.reto4.models.Permission;
 import com.reto4.models.PermissionsRole;
+import com.reto4.models.Role;
 import com.reto4.services.PermissionRoleService;
+import com.reto4.services.PermissionService;
+import com.reto4.services.RoleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,9 +17,13 @@ import java.util.Optional;
 @RequestMapping("/api/permission-role/")
 public class PermissionsRoleController {
     private final PermissionRoleService service;
+    private final PermissionService permissionService;
+    private final RoleService roleService;
 
-    public PermissionsRoleController(PermissionRoleService permissionRoleService) {
-        this.service = permissionRoleService;
+    public PermissionsRoleController(PermissionRoleService service, PermissionService permissionService, RoleService roleService) {
+        this.service = service;
+        this.permissionService = permissionService;
+        this.roleService = roleService;
     }
 
     @GetMapping
@@ -26,6 +34,17 @@ public class PermissionsRoleController {
     @GetMapping("{id}")
     public Optional<PermissionsRole> getPermissionsRole(@PathVariable("id") String id) {
         return service.getPermissionRole(id);
+    }
+
+    @GetMapping("/validate-permission/{idRole}")
+    public PermissionsRole validatePermission(@PathVariable("idRole") String id, @RequestBody Permission permission) {
+        Optional<Permission> permissionRes = permissionService.getByUrlAndMethod(permission.getUrl(), permission.getMethod());
+        Optional<Role> role = roleService.getRole(id);
+
+        if ( permissionRes.isPresent() && role.isPresent()) {
+            return service.getByRoleIdAndPermissionId(role.get().get_id(), permissionRes.get().get_id()).get();
+        }
+        return null;
     }
 
     @ResponseStatus(HttpStatus.CREATED)

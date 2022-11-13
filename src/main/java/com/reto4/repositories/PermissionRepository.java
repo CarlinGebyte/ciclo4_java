@@ -8,5 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface PermissionRepository extends MongoRepository<Permission, String> {
-    Optional<Permission> findByUrl(String url);
+    Optional<Permission> findPermissionByUrl(String url);
+    Optional<Permission> findPermissionByUrlAndMethod(String url, String method);
 }

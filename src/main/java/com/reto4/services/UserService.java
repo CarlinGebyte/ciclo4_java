@@ -45,7 +45,7 @@ public class UserService {
     public User update(String id, User user) {
         Optional<User> update = userRepository.findById(id);
 
-        if (!update.isPresent()) {
+        if (update.isEmpty()) {
             return new User();
         }
 
@@ -70,7 +70,7 @@ public class UserService {
         Optional<User> user = userRepository.findById(idUser);
         Optional<Role> role = roleRepository.findById(idRole);
 
-        if (!user.isPresent() || !role.isPresent())
+        if (user.isEmpty() || role.isEmpty())
             throw new BaseCustomException("El Usuario/Rol no existe", HttpStatus.BAD_REQUEST.value());
 
         user.get().setRole(role.get());
@@ -78,8 +78,12 @@ public class UserService {
         return userRepository.save(user.get());
     }
 
+    public Optional<User> getByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     public String SHA256(String password) {
-        MessageDigest md = null;
+        MessageDigest md;
         try {
             md = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {

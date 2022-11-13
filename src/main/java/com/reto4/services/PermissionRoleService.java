@@ -58,4 +58,8 @@ public class PermissionRoleService {
         Optional<PermissionsRole> exist = permissionRoleRepository.findById(id);
         if (exist.isPresent()) permissionRoleRepository.deleteById(id);
     }
+
+    public Optional<PermissionsRole> getByRoleIdAndPermissionId(String idRole, String idPermission) {
+        return permissionRoleRepository.getPermissionsRoleByRole__idAndPermission__id(idRole, idPermission);
+    }
 }

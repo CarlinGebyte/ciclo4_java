@@ -27,9 +27,11 @@ public class PermissionService {
     }
 
     public Permission create(Permission permission) {
-        repository.findByUrl(permission.getUrl())
+        Optional<Permission> exist = repository.findPermissionByUrlAndMethod(permission.getUrl(), permission.getMethod());
+        exist
                 .ifPresent(e -> {
-                    throw new BaseCustomException("El permiso ya existe", HttpStatus.BAD_REQUEST.value());
+                    if (exist.get().getUrl().equals(permission.getUrl()))
+                        throw new BaseCustomException("El permiso ya existe", HttpStatus.BAD_REQUEST.value());
                 });
         return repository.save(permission);
     }
@@ -48,5 +50,9 @@ public class PermissionService {
     public void delete(String id) {
         Optional<Permission> permission = repository.findById(id);
         if (permission.isPresent()) repository.deleteById(id);
+    }
+
+    public Optional<Permission> getByUrlAndMethod(String url, String method) {
+        return repository.findPermissionByUrlAndMethod(url, method);
     }
 }

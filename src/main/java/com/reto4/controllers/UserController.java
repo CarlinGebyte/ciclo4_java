@@ -5,6 +5,8 @@ import com.reto4.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +34,19 @@ public class UserController {
     @PostMapping
     public User create(@RequestBody User user) {
         return userService.create(user);
+    }
+
+    @PostMapping("/validate")
+    public User validate(@RequestBody User user, final HttpServletResponse response) throws IOException {
+        Optional<User> reqUser = userService.getByEmail(user.getEmail());
+        if (reqUser.isPresent() &&
+                reqUser.get().getPassword().equals(userService.SHA256(user.getPassword()))) {
+            reqUser.get().setPassword("");
+            return reqUser.get();
+        } else {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return null;
+        }
     }
 
     @PutMapping("{id}")
