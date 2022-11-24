@@ -13,6 +13,4 @@ public class Permission {
     private String _id;
     private String url;
     private String method;
-
-
 }

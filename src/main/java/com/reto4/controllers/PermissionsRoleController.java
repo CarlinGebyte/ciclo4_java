@@ -41,6 +41,7 @@ public class PermissionsRoleController {
         Optional<Permission> permissionRes = permissionService.getByUrlAndMethod(permission.getUrl(), permission.getMethod());
         Optional<Role> role = roleService.getRole(id);
 
+
         if ( permissionRes.isPresent() && role.isPresent()) {
             return service.getByRoleIdAndPermissionId(role.get().get_id(), permissionRes.get().get_id()).get();
         }
